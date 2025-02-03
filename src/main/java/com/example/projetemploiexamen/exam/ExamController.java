@@ -36,4 +36,10 @@ public class ExamController {
     public ResponseEntity<ApiResponse<List<CreateExamDTO>>> getAllExams() {
         return examService.getAllExams();
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<CreateExamDTO>> getExamById(@PathVariable Long id) {
+        return examService.getExamById(id);
+    }
+
 }

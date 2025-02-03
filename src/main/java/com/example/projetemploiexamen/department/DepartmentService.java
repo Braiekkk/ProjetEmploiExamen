@@ -21,8 +21,8 @@ public class DepartmentService {
         this.departmentRepository = departmentRepository;
     }
 
-    public ResponseEntity<ApiResponse<Department>> getDepartmentById(Integer id) {
-        return departmentRepository.findById(String.valueOf(id))
+    public ResponseEntity<ApiResponse<Department>> getDepartmentById(Long id) {
+        return departmentRepository.findById(id)
                 .map(department -> ResponseEntity.ok(ApiResponse.success("Department found", department)))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error("Department not found")));
     }
@@ -36,19 +36,19 @@ public class DepartmentService {
         try {
             Department department = new Department();
             department.setName(createDepartmentDTO.getName());
-            department.setCreated_at(new Timestamp(System.currentTimeMillis()));
-            department.setUpdated_at(new Timestamp(System.currentTimeMillis()));
 
+            System.out.println("created department : " + department);
             departmentRepository.save(department);
             return ResponseEntity.ok(ApiResponse.success("Department created successfully", department));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error("Error creating department"));
         }
     }
 
-    public ResponseEntity<ApiResponse<Department>> updateDepartment(Integer id, UpdateDepartmentDTO updateDepartmentDTO) {
+    public ResponseEntity<ApiResponse<Department>> updateDepartment(Long id, UpdateDepartmentDTO updateDepartmentDTO) {
         try {
-            Department department = departmentRepository.findById(String.valueOf(id))
+            Department department = departmentRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Department not found"));
 
             department.setName(updateDepartmentDTO.getName());
@@ -63,8 +63,8 @@ public class DepartmentService {
         }
     }
 
-    public ResponseEntity<ApiResponse<String>> deleteDepartment(Integer id) {
-        return departmentRepository.findById(String.valueOf(id))
+    public ResponseEntity<ApiResponse<String>> deleteDepartment(Long id) {
+        return departmentRepository.findById(id)
                 .map(department -> {
                     departmentRepository.delete(department);
                     return ResponseEntity.ok(ApiResponse.success("Department deleted successfully", "Department ID: " + id));

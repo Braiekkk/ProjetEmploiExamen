@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
-@Getter
+/*@Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor*/
 public class Chefdepartment extends User {
-    @Id
+    /*@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long head_id;
 
@@ -25,5 +25,5 @@ public class Chefdepartment extends User {
         this.setEmail(email);
         this.setPassword(password);
         this.setName(name);
-    }
+    }*/
 }

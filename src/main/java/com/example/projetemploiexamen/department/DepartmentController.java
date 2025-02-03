@@ -21,7 +21,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Department>> getDepartmentById(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse<Department>> getDepartmentById(@PathVariable Long id) {
         return departmentService.getDepartmentById(id);
     }
 
@@ -36,12 +36,12 @@ public class DepartmentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Department>> updateDepartment(@PathVariable Integer id, @RequestBody UpdateDepartmentDTO departmentDTO) {
+    public ResponseEntity<ApiResponse<Department>> updateDepartment(@PathVariable Long id, @RequestBody UpdateDepartmentDTO departmentDTO) {
         return departmentService.updateDepartment(id, departmentDTO);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<String>> deleteDepartment(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse<String>> deleteDepartment(@PathVariable Long id) {
         return departmentService.deleteDepartment(id);
     }
 }

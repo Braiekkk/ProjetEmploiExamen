@@ -13,9 +13,11 @@ import lombok.Setter;
 public class TeacherDTO {
     private String name;
     private String email;
+    private long department_id;
 
     public TeacherDTO(Teacher teacher) {
         this.name = teacher.getName();
         this.email = teacher.getEmail();
+        this.department_id = teacher.getDepartment().getDepartment_id(); // Add department_id
     }
 }

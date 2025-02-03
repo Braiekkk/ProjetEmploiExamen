@@ -1,7 +1,6 @@
 package com.example.projetemploiexamen.exam.DTO;
 
 import com.example.projetemploiexamen.Teacher.DTO.TeacherDTO;
-import com.example.projetemploiexamen.Teacher.Teacher;
 import com.example.projetemploiexamen.exam.Exam;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,27 +15,24 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CreateExamDTO {
-
-    private Long id;
+public class ExamDTO {
     private String subject;
     private LocalDateTime date;
     private int duration;
     private String room;
 
-    // Change to Set<TeacherDTO>
+    // If you have multiple supervisors, you can include them as well
     private Set<TeacherDTO> supervisors;
 
-    // Constructor to convert Exam entity to CreateExamDTO
-    public CreateExamDTO(Exam exam) {
-        this.id = exam.getId();
+    // Constructor to convert an `Exam` into an `ExamDTO`
+    public ExamDTO(Exam exam) {
         this.subject = exam.getSubject();
         this.date = exam.getDate();
         this.duration = exam.getDuration();
         this.room = exam.getRoom();
-        // Convert the Set<Teacher> to Set<TeacherDTO>
         this.supervisors = exam.getSupervisors().stream()
-                .map(teacher -> new TeacherDTO(teacher)) // Convert Teacher to TeacherDTO
+                .map(teacher -> new TeacherDTO(teacher)) // Map each supervisor to a DTO
                 .collect(Collectors.toSet());
     }
 }
+

@@ -1,44 +1,59 @@
 package com.example.projetemploiexamen.exam;
 
-
+import com.example.projetemploiexamen.Teacher.DTO.TeacherDTO;
+import com.example.projetemploiexamen.Teacher.Teacher;
 import com.example.projetemploiexamen.exam.DTO.CreateExamDTO;
 import com.example.projetemploiexamen.exam.DTO.UpdateExamDTO;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @NoArgsConstructor
 @Getter
 @Setter
 public class Exam {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
     private String subject;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     @Column(nullable = false)
     private LocalDateTime date; // YYYY-MM-DD HH:MM format
+
     @Column(nullable = false)
     private int duration;
+
     @Column(nullable = false)
     private String room;
-    @Column(nullable = false)
-    private String supervisor1;
-    @Column(nullable = false)
-    private String supervisor2;
+
+    // Relation Many-to-Many avec Teacher
+    @ManyToMany
+    @JoinTable(
+            name = "exam_supervisors", // Nom de la table de jointure
+            joinColumns = @JoinColumn(name = "exam_id"), // Colonne qui fait référence à l'examen
+            inverseJoinColumns = @JoinColumn(name = "teacher_id") // Colonne qui fait référence à l'enseignant
+    )
+    private Set<Teacher> supervisors;
 
     public Exam(CreateExamDTO dto) {
         this.subject = dto.getSubject();
         this.date = dto.getDate();
         this.duration = dto.getDuration();
         this.room = dto.getRoom();
-        this.supervisor1 = dto.getSupervisor1();
-        this.supervisor2 = dto.getSupervisor2();
+        this.supervisors = dto.getSupervisors().stream()
+                .map(teacherDTO -> new Teacher(teacherDTO)) // Convert TeacherDTO to Teacher
+                .collect(Collectors.toSet()); // List des superviseurs envoyée par DTO
     }
 
     public void updateFromDTO(UpdateExamDTO dto) {
@@ -46,7 +61,6 @@ public class Exam {
         this.date = dto.getDate();
         this.duration = dto.getDuration();
         this.room = dto.getRoom();
-        this.supervisor1 = dto.getSupervisor1();
-        this.supervisor2 = dto.getSupervisor2();
+        this.supervisors = dto.getSupervisors(); // List des superviseurs envoyée par DTO
     }
 }

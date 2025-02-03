@@ -2,17 +2,18 @@ package com.example.projetemploiexamen.Teacher;
 
 import com.example.projetemploiexamen.Teacher.DTO.TeacherDTO;
 import com.example.projetemploiexamen.Teacher.DTO.UpdateTeacherDTO;
-import com.example.projetemploiexamen.Teacher.Teacher;
-import com.example.projetemploiexamen.Teacher.TeacherRepository;
 import com.example.projetemploiexamen.department.Department;
 import com.example.projetemploiexamen.department.DepartmentRepository;
-import com.example.projetemploiexamen.department.Department;
 
+import com.example.projetemploiexamen.exam.DTO.ExamDTO;
+import com.example.projetemploiexamen.exam.Exam;
+import com.example.projetemploiexamen.exam.ExamRepository;
 import com.example.projetemploiexamen.utils.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,10 +21,12 @@ import java.util.stream.Collectors;
 public class TeacherService {
     private final TeacherRepository teacherRepository;
     private final DepartmentRepository departmentRepository;
+    private final ExamRepository examRepository;
 
-    public TeacherService(TeacherRepository teacherRepository, DepartmentRepository departmentRepository) {
+    public TeacherService(TeacherRepository teacherRepository, DepartmentRepository departmentRepository,ExamRepository examRepository) {
         this.teacherRepository = teacherRepository;
         this.departmentRepository = departmentRepository;
+        this.examRepository = examRepository;
     }
 
     public ResponseEntity<ApiResponse<TeacherDTO>> getTeacherById(Long id) {
@@ -47,7 +50,7 @@ public class TeacherService {
             Department department = (Department) departmentRepository.findByName(updateTeacherDTO.getDepatmentName())
                     .orElseThrow(() -> new RuntimeException("Department not found"));
 
-            teacher.setDepartmentId(Long.valueOf(department.getDepartment_id()));
+            //teacher.setDepartmentId(Math.toIntExact(Long.valueOf(department.getDepartment_id())));
             teacher.setName(updateTeacherDTO.getName());
             teacher.setEmail(updateTeacherDTO.getEmail());
             teacherRepository.save(teacher);
@@ -69,5 +72,30 @@ public class TeacherService {
                 })
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error("Teacher not found")));
     }
+
+    // Méthode pour récupérer les examens après une certaine date pour un professeur
+    public ResponseEntity<ApiResponse<List<ExamDTO>>> getExamsForTeacherAfterDate(Long teacherId, LocalDateTime filterDate) {
+        // Find the teacher by ID
+        Teacher teacher = teacherRepository.findById(teacherId).orElse(null);
+
+        if (teacher == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error("Teacher not found"));
+        }
+
+        // Find all exams supervised by the teacher after the specified date
+        List<Exam> exams = examRepository.findBySupervisorsContainsAndDateAfter(teacher, filterDate);
+
+        // Map the Exam entities to ExamDTO
+        List<ExamDTO> examDTOs = exams.stream()
+                .map(exam -> new ExamDTO(exam)) // Convert each Exam to ExamDTO
+                .collect(Collectors.toList());
+
+        // Return the list of ExamDTOs in the response
+        return ResponseEntity.ok(ApiResponse.success("Exams retrieved successfully", examDTOs));
+    }
+
+
+
 }
 
