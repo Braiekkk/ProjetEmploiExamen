@@ -1,8 +1,6 @@
 package com.example.projetemploiexamen.niveau;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,9 +13,19 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Niveau {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id; // Clé primaire auto-générée
+
+    @Column(nullable = false)
     private String name;
+
     @Column
     private String subjects;
+
     @Column
     private Long nbrStudents;
+
+    @Column
+    private Long td;
 }
+

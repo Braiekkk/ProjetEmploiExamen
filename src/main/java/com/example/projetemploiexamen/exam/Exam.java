@@ -1,5 +1,6 @@
 package com.example.projetemploiexamen.exam;
 
+import com.example.projetemploiexamen.Room.Room;
 import com.example.projetemploiexamen.Teacher.DTO.TeacherDTO;
 import com.example.projetemploiexamen.Teacher.Teacher;
 import com.example.projetemploiexamen.exam.DTO.CreateExamDTO;
@@ -45,6 +46,15 @@ public class Exam {
             inverseJoinColumns = @JoinColumn(name = "teacher_id") // Colonne qui fait référence à l'enseignant
     )
     private Set<Teacher> supervisors;
+
+    // Relation Many-to-Many avec Room
+    @ManyToMany
+    @JoinTable(
+            name = "exam_rooms", // Nom de la table de jointure
+            joinColumns = @JoinColumn(name = "exam_id"), // Colonne qui fait référence à l'examen
+            inverseJoinColumns = @JoinColumn(name = "room_id") // Colonne qui fait référence à la salle
+    )
+    private Set<Room> rooms;
 
     public Exam(CreateExamDTO dto) {
         this.subject = dto.getSubject();

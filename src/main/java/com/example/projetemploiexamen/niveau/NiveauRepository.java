@@ -5,7 +5,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+@Repository
+public interface NiveauRepository extends JpaRepository<Niveau, Long> {
 
-public interface NiveauRepository extends JpaRepository<Niveau, String> {
+    Optional<Niveau> findById(Long id);
+
     Optional<Niveau> findByName(String name);
 }

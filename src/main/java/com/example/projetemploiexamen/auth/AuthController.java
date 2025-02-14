@@ -47,7 +47,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AuthResponseDTO>> studentLogin(@RequestBody AuthRequestDTO authRequest) {
         return authService.loginStudent(authRequest);
     }
-    @PostMapping("/auth/studnet/register")
+    @PostMapping("/auth/student/register")
     public ResponseEntity<ApiResponse<AuthResponseDTO>> studentRegister(@RequestBody CreateStudentDTO authRequest) {
         //todo the student trying to create an account (awaiting verification)
         return authService.registerStudent(authRequest);
