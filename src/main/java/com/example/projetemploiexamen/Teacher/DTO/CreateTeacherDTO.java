@@ -15,12 +15,12 @@ public class CreateTeacherDTO {
     private String name;
     private String email;
     private String password;
-    private String department;
+    private String departmentName;
 
     public CreateTeacherDTO(Teacher teacher) {
         this.name = teacher.getName();
         this.email = teacher.getEmail();
         this.password = teacher.getPassword();
-        this.department = teacher.getDepartment().getName();
+        this.departmentName = teacher.getDepartment().getName();
     }
 }

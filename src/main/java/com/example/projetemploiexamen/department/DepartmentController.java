@@ -3,6 +3,7 @@ package com.example.projetemploiexamen.department;
 
 
 import com.example.projetemploiexamen.department.DTO.CreateDepartmentDTO;
+import com.example.projetemploiexamen.department.DTO.DepartmentDTO;
 import com.example.projetemploiexamen.department.DTO.UpdateDepartmentDTO;
 import com.example.projetemploiexamen.utils.ApiResponse;
 import org.springframework.http.ResponseEntity;
@@ -21,17 +22,17 @@ public class DepartmentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Department>> getDepartmentById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<DepartmentDTO>> getDepartmentById(@PathVariable Long id) {
         return departmentService.getDepartmentById(id);
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Department>>> getAllDepartments() {
+    public ResponseEntity<ApiResponse<List<DepartmentDTO>>> getAllDepartments() {
         return departmentService.getAllDepartments();
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Department>> createDepartment(@RequestBody CreateDepartmentDTO departmentDTO) {
+    public ResponseEntity<ApiResponse<DepartmentDTO>> createDepartment(@RequestBody CreateDepartmentDTO departmentDTO) {
         return departmentService.createDepartment(departmentDTO);
     }
 

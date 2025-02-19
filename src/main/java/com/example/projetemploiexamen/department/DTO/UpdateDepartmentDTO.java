@@ -14,5 +14,5 @@ import java.sql.Timestamp;
 @Setter
 public class UpdateDepartmentDTO {
     private String name;
-    private Timestamp updated_at;
+    //the updated_at attribute is automatically managed by spring hibernate
 }

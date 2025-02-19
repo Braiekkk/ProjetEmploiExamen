@@ -1,5 +1,6 @@
 package com.example.projetemploiexamen.Teacher;
 
+import com.example.projetemploiexamen.Teacher.DTO.CreateTeacherDTO;
 import com.example.projetemploiexamen.Teacher.DTO.TeacherDTO;
 import com.example.projetemploiexamen.Teacher.DTO.UpdateTeacherDTO;
 import com.example.projetemploiexamen.department.Department;
@@ -8,9 +9,14 @@ import com.example.projetemploiexamen.department.DepartmentRepository;
 import com.example.projetemploiexamen.exam.DTO.ExamDTO;
 import com.example.projetemploiexamen.exam.Exam;
 import com.example.projetemploiexamen.exam.ExamRepository;
+import com.example.projetemploiexamen.niveau.Niveau;
+import com.example.projetemploiexamen.student.DTO.StudentDTO;
+import com.example.projetemploiexamen.student.Student;
 import com.example.projetemploiexamen.utils.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,11 +28,13 @@ public class TeacherService {
     private final TeacherRepository teacherRepository;
     private final DepartmentRepository departmentRepository;
     private final ExamRepository examRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public TeacherService(TeacherRepository teacherRepository, DepartmentRepository departmentRepository,ExamRepository examRepository) {
         this.teacherRepository = teacherRepository;
         this.departmentRepository = departmentRepository;
         this.examRepository = examRepository;
+        this.passwordEncoder= new BCryptPasswordEncoder();
     }
 
     public ResponseEntity<ApiResponse<TeacherDTO>> getTeacherById(Long id) {
@@ -47,12 +55,12 @@ public class TeacherService {
             Teacher teacher = teacherRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Teacher not found"));
 
-            Department department = (Department) departmentRepository.findByName(updateTeacherDTO.getDepatmentName())
+            Department department = departmentRepository.findByName(updateTeacherDTO.getDepartmentName())
                     .orElseThrow(() -> new RuntimeException("Department not found"));
 
-            //teacher.setDepartmentId(Math.toIntExact(Long.valueOf(department.getDepartment_id())));
             teacher.setName(updateTeacherDTO.getName());
             teacher.setEmail(updateTeacherDTO.getEmail());
+            teacher.setDepartment(department);
             teacherRepository.save(teacher);
 
             return ResponseEntity.ok(ApiResponse.success("Teacher updated successfully", new TeacherDTO(teacher)));
@@ -96,6 +104,23 @@ public class TeacherService {
     }
 
 
+    public ResponseEntity<ApiResponse<TeacherDTO>> addTeacher(CreateTeacherDTO createTeacherDTO) {
+        try {
 
+            createTeacherDTO.setPassword(passwordEncoder.encode(createTeacherDTO.getPassword()));
+            Department department = departmentRepository.findByName(createTeacherDTO.getDepartmentName())
+                    .orElseThrow(() -> new RuntimeException("Department not found"));
+
+            Teacher teacher = new Teacher(createTeacherDTO, department);
+            teacherRepository.save(teacher);
+
+            return ResponseEntity.ok(ApiResponse.success("Teacher created successfully", new TeacherDTO(teacher)));
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error("Error creating student"));
+        }
+    }
 }
 

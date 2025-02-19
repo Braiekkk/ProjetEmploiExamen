@@ -1,5 +1,6 @@
 package com.example.projetemploiexamen.Teacher;
 
+import com.example.projetemploiexamen.Teacher.DTO.CreateTeacherDTO;
 import com.example.projetemploiexamen.Teacher.DTO.TeacherDTO;
 import com.example.projetemploiexamen.Teacher.DTO.UpdateTeacherDTO;
 import com.example.projetemploiexamen.exam.DTO.ExamDTO;
@@ -36,6 +37,10 @@ public class TeacherController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<TeacherDTO>> updateTeacher(@PathVariable Long id, @RequestBody UpdateTeacherDTO teacherDTO) {
         return teacherService.updateTeacher(id, teacherDTO);
+    }
+    @PostMapping
+    public ResponseEntity<ApiResponse<TeacherDTO>> addTeacher(@RequestBody CreateTeacherDTO createTeacherDTO) {
+        return this.teacherService.addTeacher(createTeacherDTO);
     }
 
     @DeleteMapping("/{id}")
