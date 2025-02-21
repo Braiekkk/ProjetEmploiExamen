@@ -2,6 +2,7 @@ package com.example.projetemploiexamen.department;
 
 
 import com.example.projetemploiexamen.department.DTO.CreateDepartmentDTO;
+import com.example.projetemploiexamen.department.DTO.DepartmentDTO;
 import com.example.projetemploiexamen.department.DTO.UpdateDepartmentDTO;
 import com.example.projetemploiexamen.utils.ApiResponse;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,25 +23,28 @@ public class DepartmentService {
         this.departmentRepository = departmentRepository;
     }
 
-    public ResponseEntity<ApiResponse<Department>> getDepartmentById(Long id) {
+    public ResponseEntity<ApiResponse<DepartmentDTO>> getDepartmentById(Long id) {
         return departmentRepository.findById(id)
-                .map(department -> ResponseEntity.ok(ApiResponse.success("Department found", department)))
+                .map(department -> ResponseEntity.ok(ApiResponse.success("Department found", new DepartmentDTO(department))))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error("Department not found")));
     }
 
-    public ResponseEntity<ApiResponse<List<Department>>> getAllDepartments() {
-        List<Department> departments = departmentRepository.findAll();
+    public ResponseEntity<ApiResponse<List<DepartmentDTO>>> getAllDepartments() {
+        List<DepartmentDTO> departments = departmentRepository.findAll().stream()
+                .map(DepartmentDTO::new)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(ApiResponse.success("List of departments", departments));
+
     }
 
-    public ResponseEntity<ApiResponse<Department>> createDepartment(CreateDepartmentDTO createDepartmentDTO) {
+    public ResponseEntity<ApiResponse<DepartmentDTO>> createDepartment(CreateDepartmentDTO createDepartmentDTO) {
         try {
             Department department = new Department();
             department.setName(createDepartmentDTO.getName());
 
-            System.out.println("created department : " + department);
-            departmentRepository.save(department);
-            return ResponseEntity.ok(ApiResponse.success("Department created successfully", department));
+            Department saved = departmentRepository.save(department);
+            saved.setTeachers(new ArrayList<>());
+            return ResponseEntity.ok(ApiResponse.success("Department created successfully", new DepartmentDTO(saved)));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error("Error creating department"));

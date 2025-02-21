@@ -6,6 +6,8 @@ import com.example.projetemploiexamen.admin.AdminRepository;
 import com.example.projetemploiexamen.admin.DTO.CreateAdminDTO;
 import com.example.projetemploiexamen.auth.DTO.AuthRequestDTO;
 import com.example.projetemploiexamen.auth.DTO.AuthResponseDTO;
+import com.example.projetemploiexamen.auth.token.AdminAuthenticationToken;
+import com.example.projetemploiexamen.auth.token.StudentAuthenticationToken;
 import com.example.projetemploiexamen.student.DTO.CreateStudentDTO;
 import com.example.projetemploiexamen.utils.ApiResponse;
 import com.example.projetemploiexamen.utils.JwtUtil;
@@ -13,6 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -51,14 +54,17 @@ public class AuthService {
 
 
     public ResponseEntity<ApiResponse<AuthResponseDTO>> loginAdmin(AuthRequestDTO authRequest) {
+        System.out.println("trying to verify info in the service ");
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
+
+                new AdminAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
         );
 
         if (authentication.isAuthenticated()) {
-
-            return ResponseEntity.ok(ApiResponse.success("login successfull ", new AuthResponseDTO(jwtUtil.generateToken(authRequest.getEmail(),"ADMIN"))));
+            System.out.println("Admin logged in successfully");
+           return ResponseEntity.ok(ApiResponse.success("login successfull ", new AuthResponseDTO(jwtUtil.generateToken(authRequest.getEmail(),"ADMIN"))));
         } else {
+            System.out.println("Authentication failed");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("Invalid email or password"));
 
         }
@@ -66,12 +72,14 @@ public class AuthService {
 
     public ResponseEntity<ApiResponse<AuthResponseDTO>> loginStudent(AuthRequestDTO authRequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
+                new StudentAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
         );
 
         if (authentication.isAuthenticated()) {
+            System.out.println("Student logged in successfully");
             return ResponseEntity.ok(ApiResponse.success("login successfull ", new AuthResponseDTO(jwtUtil.generateToken(authRequest.getEmail(),"STUDENT"))));
         } else {
+            System.out.println("Authentication failed");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("Invalid email or password"));
 
         }

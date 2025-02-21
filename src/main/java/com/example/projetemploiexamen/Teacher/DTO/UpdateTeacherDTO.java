@@ -14,11 +14,11 @@ import lombok.Setter;
 public class UpdateTeacherDTO {
     private String name;
     private String email;
-    private String DepatmentName;
+    private String departmentName;
 
     public UpdateTeacherDTO(Teacher teacher) {
         this.name = teacher.getName();
         this.email = teacher.getEmail();
-        this.DepatmentName = teacher.getDepartment().getName();
+        this.departmentName = teacher.getDepartment().getName();
     }
 }

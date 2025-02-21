@@ -21,8 +21,9 @@ public class StudentDetailsService implements UserDetailsService{
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<Student> userDetail = studentRepository.findByEmail(email); // Assuming 'email' is used as username
-        return userDetail.map(StudentInfoDetails::new)
+
+        return studentRepository.findByEmail(email)
+                .map(StudentInfoDetails::new) // ✅ Convert to AdminInfoDetails
                 .orElseThrow(() -> new UsernameNotFoundException("Student not found: " + email));
     }
 

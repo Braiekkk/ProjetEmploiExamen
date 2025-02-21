@@ -51,7 +51,9 @@ public class AuthFilter extends OncePerRequestFilter {
             email = jwtUtil.extractEmail(token);
             role = jwtUtil.extractRole(token); // Extract role from JWT
         }
-
+        System.out.println("you are a role: " + role);
+        System.out.println("you are a email: " + email);
+        System.out.println("you are a role: " + role);
         // ✅ 2. Authenticate user only if a valid token exists and not already authenticated
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = null;
