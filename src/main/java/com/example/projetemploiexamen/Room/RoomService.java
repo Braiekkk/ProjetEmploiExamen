@@ -40,7 +40,6 @@ public class RoomService {
             room.setRoomName(roomDetails.getRoomName());
             room.setCapacity(roomDetails.getCapacity());
             room.setLocation(roomDetails.getLocation());
-            room.setIsAvailable(roomDetails.getIsAvailable());
             roomRepository.save(room);
             return ResponseEntity.ok(ApiResponse.success("Room updated successfully", room));
         } else {
@@ -78,36 +77,6 @@ public class RoomService {
         }
     }
 
-    // Get all available rooms
-    public ResponseEntity<ApiResponse<List<Room>>> getAvailableRooms() {
-        List<Room> availableRooms = roomRepository.findByIsAvailable(true);
-        return ResponseEntity.ok(ApiResponse.success("List of available rooms", availableRooms));
-    }
 
-    public ResponseEntity<ApiResponse<String>> assignRoomsToExam(Long examId, List<Long> roomIds) {
-        Optional<Exam> examOptional = examRepository.findById(examId);
-
-        if (examOptional.isPresent()) {
-            Exam exam = examOptional.get();
-
-            // Pour chaque roomId, vérifier si la salle existe et l'ajouter à l'examen
-            roomIds.forEach(roomId -> {
-                Optional<Room> roomOptional = roomRepository.findById(roomId);
-                roomOptional.ifPresent(room -> {
-                    exam.getRooms().add(room);
-                    room.setIsAvailable(false);
-                    roomRepository.save(room); // Marquer la salle comme non disponible
-                });
-            });
-
-            // Sauvegarder les modifications de l'examen
-            examRepository.save(exam);
-
-            return ResponseEntity.ok(ApiResponse.success("Rooms successfully assigned to exam", "Exam ID: " + examId));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.error("Exam not found"));
-        }
-    }
 
 }

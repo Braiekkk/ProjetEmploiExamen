@@ -19,7 +19,7 @@ public class Student extends User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "niveau_id", nullable = false)
     private Niveau niveau;
 

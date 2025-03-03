@@ -40,8 +40,5 @@ public class RoomController {
         return roomService.getRoomById(id);
     }
 
-    @GetMapping("/available")
-    public ResponseEntity<ApiResponse<List<Room>>> getAvailableRooms() {
-        return roomService.getAvailableRooms();
-    }
+    
 }

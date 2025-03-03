@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,7 +23,7 @@ public class NiveauService {
 
     public ResponseEntity<ApiResponse<CreateNiveauDTO>> createNiveau(CreateNiveauDTO niveauDTO) {
         try {
-            Niveau niveau = new Niveau(niveauDTO.getId(), niveauDTO.getName(), niveauDTO.getSubjects(), niveauDTO.getNbrStudents(), niveauDTO.getTd());
+            Niveau niveau = new Niveau(niveauDTO.getId(), niveauDTO.getName(), niveauDTO.getSubjects(), niveauDTO.getNbrStudents(), niveauDTO.getTd() , new ArrayList<>());
             niveauRepository.save(niveau);
             return ResponseEntity.ok(ApiResponse.success("Niveau created successfully", new CreateNiveauDTO(niveau)));
         } catch (Exception e) {

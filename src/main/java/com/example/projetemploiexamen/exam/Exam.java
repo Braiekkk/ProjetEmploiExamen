@@ -1,10 +1,9 @@
 package com.example.projetemploiexamen.exam;
 
 import com.example.projetemploiexamen.Room.Room;
-import com.example.projetemploiexamen.Teacher.DTO.TeacherDTO;
 import com.example.projetemploiexamen.Teacher.Teacher;
 import com.example.projetemploiexamen.exam.DTO.CreateExamDTO;
-import com.example.projetemploiexamen.exam.DTO.UpdateExamDTO;
+import com.example.projetemploiexamen.niveau.Niveau;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -13,7 +12,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 @NoArgsConstructor
@@ -25,52 +23,47 @@ public class Exam {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column
     private String subject;
 
+    @Column
+    private String period;
+
+    @Column
+    private String academicYear;
+
+    @Column
+    private Long duration;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
-    @Column(nullable = false)
-    private LocalDateTime date; // YYYY-MM-DD HH:MM format
+    private LocalDateTime startDate; // YYYY-MM-DD HH:MM format
 
-    @Column(nullable = false)
-    private int duration;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime endDate; // YYYY-MM-DD HH:MM format
 
-    @Column(nullable = false)
-    private String room;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="room_id")
+    private Room room;
 
-    // Relation Many-to-Many avec Teacher
-    @ManyToMany
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="niveau_id")
+    private Niveau niveau;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(
-            name = "exam_supervisors", // Nom de la table de jointure
-            joinColumns = @JoinColumn(name = "exam_id"), // Colonne qui fait référence à l'examen
-            inverseJoinColumns = @JoinColumn(name = "teacher_id") // Colonne qui fait référence à l'enseignant
+            name = "exam_supervisors",
+            joinColumns = @JoinColumn(name = "exam_id"),
+            inverseJoinColumns = @JoinColumn(name = "teacher_id")
     )
     private Set<Teacher> supervisors;
 
-    // Relation Many-to-Many avec Room
-    @ManyToMany
-    @JoinTable(
-            name = "exam_rooms", // Nom de la table de jointure
-            joinColumns = @JoinColumn(name = "exam_id"), // Colonne qui fait référence à l'examen
-            inverseJoinColumns = @JoinColumn(name = "room_id") // Colonne qui fait référence à la salle
-    )
-    private Set<Room> rooms;
-
-    public Exam(CreateExamDTO dto) {
-        this.subject = dto.getSubject();
-        this.date = dto.getDate();
-        this.duration = dto.getDuration();
-        this.room = dto.getRoom();
-        this.supervisors = dto.getSupervisors().stream()
-                .map(teacherDTO -> new Teacher(teacherDTO)) // Convert TeacherDTO to Teacher
-                .collect(Collectors.toSet()); // List des superviseurs envoyée par DTO
-    }
-
-    public void updateFromDTO(UpdateExamDTO dto) {
-        this.subject = dto.getSubject();
-        this.date = dto.getDate();
-        this.duration = dto.getDuration();
-        this.room = dto.getRoom();
-        this.supervisors = dto.getSupervisors(); // List des superviseurs envoyée par DTO
+    public Exam(CreateExamDTO createExamDTO, Niveau niveau) {
+        this.subject = createExamDTO.getSubject();
+        this.period = createExamDTO.getPeriod();
+        this.academicYear = createExamDTO.getAcademicYear();
+        this.duration = createExamDTO.getDuration();
+        this.startDate = createExamDTO.getStartDate();
+        this.endDate = createExamDTO.getEndDate();
+        this.niveau = niveau;
     }
 }

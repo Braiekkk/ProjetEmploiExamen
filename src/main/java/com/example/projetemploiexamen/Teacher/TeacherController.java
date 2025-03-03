@@ -47,7 +47,7 @@ public class TeacherController {
     public ResponseEntity<ApiResponse<String>> deleteTeacher(@PathVariable Long id) {
         return teacherService.deleteTeacher(id);
     }
-
+    /*
     @GetMapping("/{id}/exams")
     public ResponseEntity<ApiResponse<List<ExamDTO>>> getExamsForTeacherAfterDate(
             @PathVariable Long id,
@@ -68,6 +68,8 @@ public class TeacherController {
                     .body(ApiResponse.error("Invalid date format. Expected format: yyyy-MM-dd'T'HH:mm"));
         }
     }
+    */
+
 
 
 

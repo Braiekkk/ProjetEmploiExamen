@@ -14,5 +14,4 @@ public class CreateRoomDTO {
     private String roomName; // Nom ou numéro de la salle
     private Integer capacity; // Capacité de la salle
     private String location; // Emplacement de la salle
-    private Boolean isAvailable; // Statut de disponibilité de la salle
 }

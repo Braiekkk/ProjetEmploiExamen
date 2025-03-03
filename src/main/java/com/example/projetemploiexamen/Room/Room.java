@@ -1,12 +1,14 @@
 package com.example.projetemploiexamen.Room;
 
 import com.example.projetemploiexamen.exam.Exam;
+import com.example.projetemploiexamen.niveau.Niveau;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -28,10 +30,6 @@ public class Room {
     @Column(nullable = false, length = 100)
     private String location; // Emplacement de la salle (bâtiment, étage)
 
-    @Column(nullable = false)
-    private Boolean isAvailable; // Statut de disponibilité de la salle
-
-    // Relation Many-to-Many avec Exam
-    @ManyToMany(mappedBy = "rooms") // mappedBy spécifie que la relation est gérée dans l'entité Exam
-    private Set<Exam> exams;
+    @OneToMany(mappedBy = "room", cascade = CascadeType.PERSIST)
+    private List<Exam> exams ;
 }

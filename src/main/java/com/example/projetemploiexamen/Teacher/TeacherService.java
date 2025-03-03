@@ -27,13 +27,11 @@ import java.util.stream.Collectors;
 public class TeacherService {
     private final TeacherRepository teacherRepository;
     private final DepartmentRepository departmentRepository;
-    private final ExamRepository examRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public TeacherService(TeacherRepository teacherRepository, DepartmentRepository departmentRepository,ExamRepository examRepository) {
+    public TeacherService(TeacherRepository teacherRepository, DepartmentRepository departmentRepository) {
         this.teacherRepository = teacherRepository;
         this.departmentRepository = departmentRepository;
-        this.examRepository = examRepository;
         this.passwordEncoder= new BCryptPasswordEncoder();
     }
 
@@ -82,7 +80,7 @@ public class TeacherService {
     }
 
     // Méthode pour récupérer les examens après une certaine date pour un professeur
-    public ResponseEntity<ApiResponse<List<ExamDTO>>> getExamsForTeacherAfterDate(Long teacherId, LocalDateTime filterDate) {
+    /*public ResponseEntity<ApiResponse<List<ExamDTO>>> getExamsForTeacherAfterDate(Long teacherId, LocalDateTime filterDate) {
         // Find the teacher by ID
         Teacher teacher = teacherRepository.findById(teacherId).orElse(null);
 
@@ -92,7 +90,7 @@ public class TeacherService {
         }
 
         // Find all exams supervised by the teacher after the specified date
-        List<Exam> exams = examRepository.findBySupervisorsContainsAndDateAfter(teacher, filterDate);
+        List<Exam> exams = examRepository.findBySupervisorsContainsAndStartAfter(teacher, filterDate);
 
         // Map the Exam entities to ExamDTO
         List<ExamDTO> examDTOs = exams.stream()
@@ -101,7 +99,7 @@ public class TeacherService {
 
         // Return the list of ExamDTOs in the response
         return ResponseEntity.ok(ApiResponse.success("Exams retrieved successfully", examDTOs));
-    }
+    }*/
 
 
     public ResponseEntity<ApiResponse<TeacherDTO>> addTeacher(CreateTeacherDTO createTeacherDTO) {
