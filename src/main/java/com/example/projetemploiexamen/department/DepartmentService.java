@@ -51,7 +51,7 @@ public class DepartmentService {
         }
     }
 
-    public ResponseEntity<ApiResponse<Department>> updateDepartment(Long id, UpdateDepartmentDTO updateDepartmentDTO) {
+    public ResponseEntity<ApiResponse<DepartmentDTO>> updateDepartment(Long id, UpdateDepartmentDTO updateDepartmentDTO) {
         try {
             Department department = departmentRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Department not found"));
@@ -60,7 +60,7 @@ public class DepartmentService {
             department.setUpdated_at(new Timestamp(System.currentTimeMillis()));
 
             departmentRepository.save(department);
-            return ResponseEntity.ok(ApiResponse.success("Department updated successfully", department));
+            return ResponseEntity.ok(ApiResponse.success("Department updated successfully", new DepartmentDTO(department)));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(e.getMessage()));
         } catch (Exception e) {

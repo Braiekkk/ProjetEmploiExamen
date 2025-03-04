@@ -37,7 +37,7 @@ public class DepartmentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Department>> updateDepartment(@PathVariable Long id, @RequestBody UpdateDepartmentDTO departmentDTO) {
+    public ResponseEntity<ApiResponse<DepartmentDTO>> updateDepartment(@PathVariable Long id, @RequestBody UpdateDepartmentDTO departmentDTO) {
         return departmentService.updateDepartment(id, departmentDTO);
     }
 
