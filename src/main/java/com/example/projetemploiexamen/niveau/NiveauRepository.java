@@ -14,4 +14,6 @@ public interface NiveauRepository extends JpaRepository<Niveau, Long> {
     Optional<Niveau> findByName(String name);
 
     Optional<Niveau> findByNameAndTd(String name, Long td);
+
+    Optional<Niveau> findFirstByName(String name);
 }

@@ -20,7 +20,7 @@ public class Niveau {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // Clé primaire auto-générée
 
-    @Column(nullable = false)
+    @Column(nullable = false , unique = true )
     private String name;
 
     @Column
