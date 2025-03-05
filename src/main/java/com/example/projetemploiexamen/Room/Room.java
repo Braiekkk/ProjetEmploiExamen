@@ -1,5 +1,7 @@
 package com.example.projetemploiexamen.Room;
 
+import com.example.projetemploiexamen.Room.DTO.CreateRoomDTO;
+import com.example.projetemploiexamen.Room.DTO.UpdateRoomDTO;
 import com.example.projetemploiexamen.exam.Exam;
 import com.example.projetemploiexamen.niveau.Niveau;
 import jakarta.persistence.*;
@@ -19,10 +21,10 @@ import java.util.Set;
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long roomId; // Identifiant unique de la salle
+    private Long id; // Identifiant unique de la salle
 
     @Column(nullable = false, length = 50)
-    private String roomName; // Nom ou numéro de la salle
+    private String name; // Nom ou numéro de la salle
 
     @Column(nullable = false)
     private Integer capacity; // Capacité de la salle
@@ -32,4 +34,12 @@ public class Room {
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.PERSIST)
     private List<Exam> exams ;
+
+    public Room (CreateRoomDTO dto) {
+        this.capacity = dto.getCapacity();
+        this.name = dto.getName();
+        this.location = dto.getLocation();
+    }
+
+
 }
