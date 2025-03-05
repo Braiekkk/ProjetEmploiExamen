@@ -1,5 +1,8 @@
 package com.example.projetemploiexamen.Room;
 
+import com.example.projetemploiexamen.Room.DTO.CreateRoomDTO;
+import com.example.projetemploiexamen.Room.DTO.RoomDTO;
+import com.example.projetemploiexamen.Room.DTO.UpdateRoomDTO;
 import com.example.projetemploiexamen.utils.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +19,12 @@ public class RoomController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Room>> createRoom(@RequestBody Room room) {
+    public ResponseEntity<ApiResponse<RoomDTO>> createRoom(@RequestBody CreateRoomDTO room) {
         return roomService.createRoom(room);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Room>> updateRoom(@PathVariable Long id, @RequestBody Room roomDetails) {
+    public ResponseEntity<ApiResponse<RoomDTO>> updateRoom(@PathVariable Long id, @RequestBody UpdateRoomDTO roomDetails) {
         return roomService.updateRoom(id, roomDetails);
     }
 
@@ -36,7 +39,7 @@ public class RoomController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Room>> getRoomById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<RoomDTO>> getRoomById(@PathVariable Long id) {
         return roomService.getRoomById(id);
     }
 

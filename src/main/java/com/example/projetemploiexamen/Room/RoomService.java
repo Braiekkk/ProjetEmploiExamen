@@ -1,7 +1,10 @@
 package com.example.projetemploiexamen.Room;
 
-import com.example.projetemploiexamen.exam.Exam;
+import com.example.projetemploiexamen.Room.DTO.CreateRoomDTO;
+import com.example.projetemploiexamen.Room.DTO.RoomDTO;
+import com.example.projetemploiexamen.Room.DTO.UpdateRoomDTO;
 import com.example.projetemploiexamen.exam.ExamRepository;
+import com.example.projetemploiexamen.student.Student;
 import com.example.projetemploiexamen.utils.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +25,11 @@ public class RoomService {
     }
 
     // Create a new room
-    public ResponseEntity<ApiResponse<Room>> createRoom(Room room) {
+    public ResponseEntity<ApiResponse<RoomDTO>> createRoom(CreateRoomDTO room) {
         try {
-            roomRepository.save(room);
-            return ResponseEntity.ok(ApiResponse.success("Room created successfully", room));
+            Room r = new Room (room);
+            roomRepository.save(r);
+            return ResponseEntity.ok(ApiResponse.success("Room created successfully", new RoomDTO(r)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.error("Failed to create room"));
@@ -33,15 +37,15 @@ public class RoomService {
     }
 
     // Update room details
-    public ResponseEntity<ApiResponse<Room>> updateRoom(Long id, Room roomDetails) {
+    public ResponseEntity<ApiResponse<RoomDTO>> updateRoom(Long id, UpdateRoomDTO roomDetails) {
         Optional<Room> existingRoom = roomRepository.findById(id);
         if (existingRoom.isPresent()) {
             Room room = existingRoom.get();
-            room.setRoomName(roomDetails.getRoomName());
+            room.setName(roomDetails.getName());
             room.setCapacity(roomDetails.getCapacity());
             room.setLocation(roomDetails.getLocation());
             roomRepository.save(room);
-            return ResponseEntity.ok(ApiResponse.success("Room updated successfully", room));
+            return ResponseEntity.ok(ApiResponse.success("Room updated successfully", new RoomDTO(room)));
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ApiResponse.error("Room not found"));
@@ -67,16 +71,14 @@ public class RoomService {
     }
 
     // Get a room by its ID
-    public ResponseEntity<ApiResponse<Room>> getRoomById(Long id) {
-        Optional<Room> room = roomRepository.findById(id);
-        if (room.isPresent()) {
-            return ResponseEntity.ok(ApiResponse.success("Room retrieved successfully", room.get()));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.error("Room not found"));
-        }
+    public ResponseEntity<ApiResponse<RoomDTO>> getRoomById(Long id) {
+        return roomRepository.findById(id)
+                .map(room -> ResponseEntity.ok(ApiResponse.success("Room retrieved successfully", new RoomDTO(room))))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error("Room not found")));
     }
 
-
-
 }
+
+
+
+
