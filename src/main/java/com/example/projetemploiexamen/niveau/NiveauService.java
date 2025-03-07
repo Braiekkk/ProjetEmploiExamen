@@ -1,6 +1,7 @@
 package com.example.projetemploiexamen.niveau;
 
 import com.example.projetemploiexamen.niveau.DTO.CreateNiveauDTO;
+import com.example.projetemploiexamen.niveau.DTO.NiveauDTO;
 import com.example.projetemploiexamen.niveau.DTO.UpdateNiveauDTO;
 import com.example.projetemploiexamen.utils.ApiResponse;
 import org.springframework.http.HttpStatus;
@@ -67,6 +68,14 @@ public class NiveauService {
         Optional<Niveau> optionalNiveau = niveauRepository.findById(id);
 
         return optionalNiveau.map(niveau -> ResponseEntity.ok(ApiResponse.success("Niveau retrieved successfully", new CreateNiveauDTO(niveau))))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ApiResponse.error("Niveau not found")));
+    }
+
+    public ResponseEntity<ApiResponse<NiveauDTO>> getNiveauByName(String niveauName) {
+        Optional<Niveau> optionalNiveau = niveauRepository.findFirstByName(niveauName);
+
+        return optionalNiveau.map(niveau -> ResponseEntity.ok(ApiResponse.success("Niveau retrieved successfully", new NiveauDTO(niveau))))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(ApiResponse.error("Niveau not found")));
     }

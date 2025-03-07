@@ -1,5 +1,6 @@
 package com.example.projetemploiexamen.niveau;
 import com.example.projetemploiexamen.niveau.DTO.CreateNiveauDTO;
+import com.example.projetemploiexamen.niveau.DTO.NiveauDTO;
 import com.example.projetemploiexamen.niveau.DTO.UpdateNiveauDTO;
 import com.example.projetemploiexamen.utils.ApiResponse;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,11 @@ public class NiveauController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<UpdateNiveauDTO>> updateNiveau(@PathVariable Long id, @RequestBody UpdateNiveauDTO niveauDTO) {
         return niveauService.updateNiveau(id, niveauDTO);
+    }
+
+    @GetMapping("/specific")
+    public ResponseEntity<ApiResponse<NiveauDTO>> getNiveauByName(@RequestParam String niveauName) {
+        return niveauService.getNiveauByName(niveauName);
     }
 
     @DeleteMapping("/{id}")
