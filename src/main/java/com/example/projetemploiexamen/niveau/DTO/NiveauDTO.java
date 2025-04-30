@@ -11,12 +11,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NiveauDTO {
+    private long id;
     private String name;
     private String subjects;
     private Long nbrStudents;
     private Long td; // Added TD field
 
     public NiveauDTO(Niveau niveau) {
+        this.id = niveau.getId();
         this.name = niveau.getName();
         this.subjects = niveau.getSubjects();
         this.nbrStudents = niveau.getNbrStudents();

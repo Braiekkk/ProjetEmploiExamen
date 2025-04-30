@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class RoomService {
@@ -64,11 +65,13 @@ public class RoomService {
         }
     }
 
-    // Get all rooms
-    public ResponseEntity<ApiResponse<List<Room>>> getAllRooms() {
-        List<Room> rooms = roomRepository.findAll();
+    public ResponseEntity<ApiResponse<List<RoomDTO>>> getAllRooms() {
+        List<RoomDTO> rooms = roomRepository.findAll().stream()
+                .map(RoomDTO::new)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(ApiResponse.success("List of all rooms", rooms));
     }
+
 
     // Get a room by its ID
     public ResponseEntity<ApiResponse<RoomDTO>> getRoomById(Long id) {

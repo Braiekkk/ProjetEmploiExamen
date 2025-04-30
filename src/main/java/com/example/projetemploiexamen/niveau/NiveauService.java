@@ -22,30 +22,37 @@ public class NiveauService {
         this.niveauRepository = niveauRepository;
     }
 
-    public ResponseEntity<ApiResponse<CreateNiveauDTO>> createNiveau(CreateNiveauDTO niveauDTO) {
+    public ResponseEntity<ApiResponse<NiveauDTO>> createNiveau(CreateNiveauDTO niveauDTO) {
         try {
-            Niveau niveau = new Niveau(niveauDTO.getId(), niveauDTO.getName(), niveauDTO.getSubjects(), niveauDTO.getNbrStudents(), niveauDTO.getTd() , new ArrayList<>());
+            Niveau niveau = new Niveau(niveauDTO);
             niveauRepository.save(niveau);
-            return ResponseEntity.ok(ApiResponse.success("Niveau created successfully", new CreateNiveauDTO(niveau)));
+            return ResponseEntity.ok(ApiResponse.success("Niveau created successfully", new NiveauDTO(niveau)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.error("Failed to create niveau: " + e.getMessage()));
         }
     }
 
-    public ResponseEntity<ApiResponse<UpdateNiveauDTO>> updateNiveau(Long id, UpdateNiveauDTO niveauDTO) {
-        return niveauRepository.findById(id)
-                .map(niveau -> {
-                    niveau.setName(niveauDTO.getName());
-                    niveau.setSubjects(niveauDTO.getSubjects());
-                    niveau.setNbrStudents(niveauDTO.getNbrStudents());
-                    niveau.setTd(niveauDTO.getTd());
-                    niveauRepository.save(niveau);
-                    return ResponseEntity.ok(ApiResponse.success("Niveau updated successfully", new UpdateNiveauDTO(niveau)));
-                })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(ApiResponse.error("Niveau not found")));
+    public ResponseEntity<ApiResponse<NiveauDTO>> updateNiveau(Long id, UpdateNiveauDTO updateNiveauDTO) {
+        try {
+            Niveau niveau = niveauRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Niveau not found"));
+
+            niveau.setName(updateNiveauDTO.getName());
+            niveau.setSubjects(updateNiveauDTO.getSubjects());
+            niveau.setNbrStudents(updateNiveauDTO.getNbrStudents());
+            niveau.setTd(updateNiveauDTO.getTd());
+            niveauRepository.save(niveau);
+
+            return ResponseEntity.ok(ApiResponse.success("Niveau updated successfully", new NiveauDTO(niveau)));
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error("Error updating niveau"));
+        }
     }
+
 
     public ResponseEntity<ApiResponse<String>> deleteNiveau(Long id) {
         return niveauRepository.findById(id)
@@ -57,20 +64,19 @@ public class NiveauService {
                         .body(ApiResponse.error("Niveau not found")));
     }
 
-    public ResponseEntity<ApiResponse<List<CreateNiveauDTO>>> getAllNiveaux() {
-        List<CreateNiveauDTO> niveaux = niveauRepository.findAll().stream()
-                .map(CreateNiveauDTO::new)
+    public ResponseEntity<ApiResponse<List<NiveauDTO>>> getAllNiveaux() {
+        List<NiveauDTO> niveaux = niveauRepository.findAll().stream()
+                .map(NiveauDTO::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(ApiResponse.success("List of all niveaux", niveaux));
     }
 
-    public ResponseEntity<ApiResponse<CreateNiveauDTO>> getNiveauById(Long id) {
-        Optional<Niveau> optionalNiveau = niveauRepository.findById(id);
-
-        return optionalNiveau.map(niveau -> ResponseEntity.ok(ApiResponse.success("Niveau retrieved successfully", new CreateNiveauDTO(niveau))))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(ApiResponse.error("Niveau not found")));
+    public ResponseEntity<ApiResponse<NiveauDTO>> getNiveauById(Long id) {
+        return niveauRepository.findById(id)
+                .map(niveau -> ResponseEntity.ok(ApiResponse.success("Niveau retrieved successfully", new NiveauDTO(niveau))))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error("Niveau not found")));
     }
+
 
     public ResponseEntity<ApiResponse<NiveauDTO>> getNiveauByName(String niveauName) {
         Optional<Niveau> optionalNiveau = niveauRepository.findFirstByName(niveauName);

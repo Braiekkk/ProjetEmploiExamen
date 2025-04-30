@@ -18,7 +18,7 @@ public class NiveauController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<CreateNiveauDTO>> createNiveau(@RequestBody CreateNiveauDTO niveauDTO) {
+    public ResponseEntity<ApiResponse<NiveauDTO>> createNiveau(@RequestBody CreateNiveauDTO niveauDTO) {
         return niveauService.createNiveau(niveauDTO);
     }
     @GetMapping("/specific")
@@ -26,7 +26,7 @@ public class NiveauController {
         return niveauService.getNiveauByName(niveauName);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<UpdateNiveauDTO>> updateNiveau(@PathVariable Long id, @RequestBody UpdateNiveauDTO niveauDTO) {
+    public ResponseEntity<ApiResponse<NiveauDTO>> updateNiveau(@PathVariable Long id, @RequestBody UpdateNiveauDTO niveauDTO) {
         return niveauService.updateNiveau(id, niveauDTO);
     }
 
@@ -41,12 +41,12 @@ public class NiveauController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<CreateNiveauDTO>>> getAllNiveaux() {
+    public ResponseEntity<ApiResponse<List<NiveauDTO>>> getAllNiveaux() {
         return niveauService.getAllNiveaux();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<CreateNiveauDTO>> getNiveauById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<NiveauDTO>> getNiveauById(@PathVariable Long id) {
         return niveauService.getNiveauById(id);
     }
 

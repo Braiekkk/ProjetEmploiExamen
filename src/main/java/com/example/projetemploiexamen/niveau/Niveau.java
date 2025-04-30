@@ -1,6 +1,7 @@
 package com.example.projetemploiexamen.niveau;
 
 import com.example.projetemploiexamen.exam.Exam;
+import com.example.projetemploiexamen.niveau.DTO.CreateNiveauDTO;
 import com.example.projetemploiexamen.student.Student;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,4 +37,11 @@ public class Niveau {
     private List<Exam> exams;
 
 
+    public Niveau(CreateNiveauDTO niveauDTO) {
+        this.name = niveauDTO.getName();
+        this.subjects = niveauDTO.getSubjects();
+        this.nbrStudents = niveauDTO.getNbrStudents();
+        this.td = niveauDTO.getTd();
+
+    }
 }
