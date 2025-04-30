@@ -11,8 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateRoomDTO {
-    private Long roomId; // Identifiant unique de la salle
-    private String roomName; // Nom ou numéro de la salle
+    private Long id; // Identifiant unique de la salle
+    private String name; // Nom ou numéro de la salle
     private Integer capacity; // Capacité de la salle
     private String location; // Emplacement de la salle
 }
