@@ -21,7 +21,10 @@ public class NiveauController {
     public ResponseEntity<ApiResponse<CreateNiveauDTO>> createNiveau(@RequestBody CreateNiveauDTO niveauDTO) {
         return niveauService.createNiveau(niveauDTO);
     }
-
+    @GetMapping("/specific")
+    public ResponseEntity<ApiResponse<NiveauDTO>> getNiveauByName(@RequestParam String niveauName) {
+        return niveauService.getNiveauByName(niveauName);
+    }
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<UpdateNiveauDTO>> updateNiveau(@PathVariable Long id, @RequestBody UpdateNiveauDTO niveauDTO) {
         return niveauService.updateNiveau(id, niveauDTO);
@@ -46,4 +49,5 @@ public class NiveauController {
     public ResponseEntity<ApiResponse<CreateNiveauDTO>> getNiveauById(@PathVariable Long id) {
         return niveauService.getNiveauById(id);
     }
+
 }
