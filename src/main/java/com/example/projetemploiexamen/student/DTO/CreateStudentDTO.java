@@ -14,11 +14,13 @@ public class CreateStudentDTO {
     private String email;
     private String password;
     private String niveauName;
+    private String td;
 
     public CreateStudentDTO(Student student) {
         this.name = student.getName();
         this.email = student.getEmail();
         this.niveauName = student.getNiveau().getName();
         this.password = student.getPassword();
+        this.td= String.valueOf(student.getNiveau().getTd());
     }
 }

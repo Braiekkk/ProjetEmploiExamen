@@ -30,10 +30,6 @@ public class NiveauController {
         return niveauService.updateNiveau(id, niveauDTO);
     }
 
-    @GetMapping("/specific")
-    public ResponseEntity<ApiResponse<NiveauDTO>> getNiveauByName(@RequestParam String niveauName) {
-        return niveauService.getNiveauByName(niveauName);
-    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deleteNiveau(@PathVariable Long id) {

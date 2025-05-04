@@ -47,28 +47,18 @@ public class TeacherController {
     public ResponseEntity<ApiResponse<String>> deleteTeacher(@PathVariable Long id) {
         return teacherService.deleteTeacher(id);
     }
-    /*
-    @GetMapping("/{id}/exams")
-    public ResponseEntity<ApiResponse<List<ExamDTO>>> getExamsForTeacherAfterDate(
-            @PathVariable Long id,
-            @RequestParam(name = "date") String date) {
-
-        // Clean the date string by trimming any unwanted spaces or newline characters
-        String cleanedDate = date.trim(); // Removes leading and trailing whitespace/newlines
-
+    @GetMapping("/available")
+    public ResponseEntity<ApiResponse<List<TeacherDTO>>> getAvailableTeachers(
+            @RequestParam String dateTime) {
         try {
-            // Convert the cleaned date string into a LocalDateTime object
-            LocalDateTime filterDate = LocalDateTime.parse(cleanedDate);
-
-            // Call the service to get exams for the teacher after the given date
-            return teacherService.getExamsForTeacherAfterDate(id, filterDate);
+            LocalDateTime parsedDateTime = LocalDateTime.parse(dateTime);
+            return teacherService.getAvailableTeachers(parsedDateTime);
         } catch (DateTimeParseException e) {
-            // Handle invalid date format exception
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponse.error("Invalid date format. Expected format: yyyy-MM-dd'T'HH:mm"));
+                    .body(ApiResponse.error("Invalid date-time format. Use 'yyyy-MM-ddTHH:mm' format."));
         }
     }
-    */
+
 
 
 

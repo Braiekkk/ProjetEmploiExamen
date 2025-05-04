@@ -120,5 +120,18 @@ public class TeacherService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error("Error creating student"));
         }
     }
+
+    public ResponseEntity<ApiResponse<List<TeacherDTO>>> getAvailableTeachers(LocalDateTime dateTime) {
+        try {
+            List<Teacher> availableTeachers = teacherRepository.findAvailableTeachers(dateTime);
+            List<TeacherDTO> teacherDTOs = availableTeachers.stream()
+                    .map(TeacherDTO::new)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(ApiResponse.success("Available teachers retrieved successfully", teacherDTOs));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Error retrieving available teachers"));
+        }
+    }
 }
 

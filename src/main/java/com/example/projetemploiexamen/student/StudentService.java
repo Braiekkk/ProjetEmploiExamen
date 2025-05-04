@@ -44,16 +44,25 @@ public class StudentService {
 
     public ResponseEntity<ApiResponse<StudentDTO>> createStudent(CreateStudentDTO createStudentDTO) {
         try {
-            System.out.println("CreateStudentDTO: " + createStudentDTO.toString());
+            // Encode the password
             createStudentDTO.setPassword(passwordEncoder.encode(createStudentDTO.getPassword()));
-            Niveau niveau = niveauRepository.findByName(createStudentDTO.getNiveauName())
-                    .orElseThrow(() -> new RuntimeException("Niveau not found"));
 
+            // Parse the 'td' value
+            Long tdValue = Long.parseLong(createStudentDTO.getTd());
+
+            // Fetch the Niveau by name and td
+            Niveau niveau = niveauRepository.findByNameAndTd(createStudentDTO.getNiveauName(), tdValue)
+                    .orElseThrow(() -> new RuntimeException("Niveau not found with the specified name and td"));
+
+            // Create and save the Student
             Student student = new Student(createStudentDTO, niveau);
             studentRepository.save(student);
 
+            // Return success response
             return ResponseEntity.ok(ApiResponse.success("Student created successfully", new StudentDTO(student)));
 
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("Invalid 'td' value. It must be a number."));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(e.getMessage()));
         } catch (Exception e) {

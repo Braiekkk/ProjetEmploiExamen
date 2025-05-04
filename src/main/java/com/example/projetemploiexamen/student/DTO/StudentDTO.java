@@ -21,6 +21,5 @@ public class StudentDTO {
         this.id = student.getId();
         this.name = student.getName();
         this.email = student.getEmail();
-        this.niveau = new NiveauDTO(student.getNiveau());
-    }
+        this.niveau = new NiveauDTO(student.getNiveau());     }
 }
