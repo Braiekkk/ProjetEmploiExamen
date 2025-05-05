@@ -34,7 +34,7 @@ public class RoomController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Room>>> getAllRooms() {
+    public ResponseEntity<ApiResponse<List<RoomDTO>>> getAllRooms() {
         return roomService.getAllRooms();
     }
 

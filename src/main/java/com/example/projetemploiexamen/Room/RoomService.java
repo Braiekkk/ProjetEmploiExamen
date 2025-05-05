@@ -4,6 +4,7 @@ import com.example.projetemploiexamen.Room.DTO.CreateRoomDTO;
 import com.example.projetemploiexamen.Room.DTO.RoomDTO;
 import com.example.projetemploiexamen.Room.DTO.UpdateRoomDTO;
 import com.example.projetemploiexamen.exam.ExamRepository;
+import com.example.projetemploiexamen.student.DTO.StudentDTO;
 import com.example.projetemploiexamen.student.Student;
 import com.example.projetemploiexamen.utils.ApiResponse;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class RoomService {
@@ -65,8 +67,13 @@ public class RoomService {
     }
 
     // Get all rooms
-    public ResponseEntity<ApiResponse<List<Room>>> getAllRooms() {
-        List<Room> rooms = roomRepository.findAll();
+    public ResponseEntity<ApiResponse<List<RoomDTO>>> getAllRooms() {
+        List<RoomDTO> rooms = roomRepository.findAll()
+                .stream()
+                .map(RoomDTO::new)
+                .collect(Collectors.toList());
+
+
         return ResponseEntity.ok(ApiResponse.success("List of all rooms", rooms));
     }
 

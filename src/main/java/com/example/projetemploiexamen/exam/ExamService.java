@@ -10,16 +10,16 @@ import com.example.projetemploiexamen.exam.DTO.ExamDTO;
 import com.example.projetemploiexamen.exam.DTO.UpdateExamDTO;
 import com.example.projetemploiexamen.niveau.Niveau;
 import com.example.projetemploiexamen.niveau.NiveauRepository;
+import com.example.projetemploiexamen.notification.examEvent.ExamUpdatedEvent;
 import com.example.projetemploiexamen.student.StudentRepository;
 import com.example.projetemploiexamen.utils.ApiResponse;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,13 +29,15 @@ public class ExamService {
     private final RoomRepository roomRepository;
     private final TeacherRepository teacherRepository;
     private final NiveauRepository niveauRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public ExamService(ExamRepository examRepository ,
-                       RoomRepository roomRepository, TeacherRepository teacherRepository, NiveauRepository niveauRepository) {
+                       RoomRepository roomRepository, TeacherRepository teacherRepository, NiveauRepository niveauRepository, ApplicationEventPublisher eventPublisher) {
         this.examRepository = examRepository;
         this.roomRepository = roomRepository;
         this.teacherRepository = teacherRepository;
         this.niveauRepository = niveauRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     /*public ResponseEntity<ApiResponse<CreateExamDTO>> createExam(CreateExamDTO examDTO) {
@@ -70,27 +72,40 @@ public class ExamService {
                     .body(ApiResponse.error("Failed to create exam"));
         }
     }
-
+    @Transactional
     public ResponseEntity<ApiResponse<ExamDTO>> updateExam(Long id, UpdateExamDTO examDTO) {
         try {
             // Find the exam or throw an error if not found
-            Exam exam = examRepository.findById(id)
+            Exam oldExam = examRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Exam not found"));
 
+            // Create a clone of the old exam for event publishing
+            Exam clonedOld = cloneExam(oldExam);
+
+            // Check if schedule-relevant fields or supervisors changed
+            boolean changed =
+                    (examDTO.getStartDate() != null && !Objects.equals(oldExam.getStartDate(), examDTO.getStartDate())) ||
+                    (examDTO.getEndDate() != null && !Objects.equals(oldExam.getEndDate(), examDTO.getEndDate())) ||
+                    (examDTO.getRoomId() != null && examDTO.getRoomId().isPresent() && !Objects.equals(oldExam.getRoom() != null ? oldExam.getRoom().getId() : null, examDTO.getRoomId().get())) ||
+                    (examDTO.getSupervisorIds() != null && examDTO.getSupervisorIds().isPresent() &&
+                            !Objects.equals(
+                                    oldExam.getSupervisors().stream().map(Teacher::getId).collect(Collectors.toSet()),
+                                    new HashSet<>(examDTO.getSupervisorIds().get())
+                            ));
             // Update fields only if they are provided (not null)
-            if (examDTO.getSubject() != null) exam.setSubject(examDTO.getSubject());
-            if (examDTO.getStartDate() != null) exam.setStartDate(examDTO.getStartDate());
-            if (examDTO.getEndDate() != null) exam.setEndDate(examDTO.getEndDate());
-            if (examDTO.getDuration() != null) exam.setDuration(examDTO.getDuration());
+            if (examDTO.getSubject() != null) oldExam.setSubject(examDTO.getSubject());
+            if (examDTO.getStartDate() != null) oldExam.setStartDate(examDTO.getStartDate());
+            if (examDTO.getEndDate() != null) oldExam.setEndDate(examDTO.getEndDate());
+            if (examDTO.getDuration() != null) oldExam.setDuration(examDTO.getDuration());
 
             // Handle room update
             if (examDTO.getRoomId() != null) {
                 if (examDTO.getRoomId().isPresent()) {
                     Room room = roomRepository.findById(examDTO.getRoomId().get())
                             .orElseThrow(() -> new RuntimeException("Room not found with ID: " + examDTO.getRoomId().get()));
-                    exam.setRoom(room);
+                    oldExam.setRoom(room);
                 } else {
-                    exam.setRoom(null); // Explicitly set to null if roomId is present but null
+                    oldExam.setRoom(null); // Explicitly set to null if roomId is present but null
                 }
             }
 
@@ -104,17 +119,22 @@ public class ExamService {
                         throw new RuntimeException("One or more supervisor IDs not found.");
                     }
 
-                    exam.setSupervisors(supervisors);
+                    oldExam.setSupervisors(supervisors);
                 } else {
-                    exam.setSupervisors(new HashSet<>()); // If supervisorIds is present but null, clear the supervisors
+                    oldExam.setSupervisors(new HashSet<>()); // If supervisorIds is present but null, clear the supervisors
                 }
             }
 
             // Save updated exam
-            examRepository.save(exam);
+            examRepository.save(oldExam);
+
+            // Publish event if relevant fields changed
+            if (changed) {
+                eventPublisher.publishEvent(new ExamUpdatedEvent(clonedOld, oldExam));
+            }
 
             // Return success response
-            return ResponseEntity.ok(ApiResponse.success("Exam updated successfully", new ExamDTO(exam)));
+            return ResponseEntity.ok(ApiResponse.success("Exam updated successfully", new ExamDTO(oldExam)));
 
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(e.getMessage()));
@@ -180,5 +200,25 @@ public class ExamService {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error("Error retrieving exams"));
         }
+    }
+
+    private void updateFields(Exam target, Exam source) {
+        target.setStartDate(source.getStartDate());
+        target.setEndDate(source.getEndDate());
+        target.setRoom(source.getRoom());
+        target.setDuration(source.getDuration());
+        target.setSubject(source.getSubject());
+    }
+
+    private Exam cloneExam(Exam exam) {
+        Exam copy = new Exam();
+        copy.setId(exam.getId());
+        copy.setStartDate(exam.getStartDate());
+        copy.setEndDate(exam.getEndDate());
+        copy.setRoom(exam.getRoom());
+        copy.setDuration(exam.getDuration());
+        copy.setSubject(exam.getSubject());
+        copy.setSupervisors(new HashSet<>(exam.getSupervisors()));
+        return copy;
     }
 }
