@@ -27,11 +27,13 @@ import java.util.stream.Collectors;
 public class TeacherService {
     private final TeacherRepository teacherRepository;
     private final DepartmentRepository departmentRepository;
+    private final ExamRepository examRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public TeacherService(TeacherRepository teacherRepository, DepartmentRepository departmentRepository) {
+    public TeacherService(TeacherRepository teacherRepository, DepartmentRepository departmentRepository, ExamRepository examRepository) {
         this.teacherRepository = teacherRepository;
         this.departmentRepository = departmentRepository;
+        this.examRepository = examRepository;
         this.passwordEncoder= new BCryptPasswordEncoder();
     }
 
@@ -119,6 +121,19 @@ public class TeacherService {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error("Error creating student"));
         }
+    }
+
+
+    public ResponseEntity<ApiResponse<List<ExamDTO>>> getExamsForTeacher(Long teacherId) {
+        if (!teacherRepository.existsById(teacherId)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error("Teacher not found"));
+        }
+
+        List<Exam> exams = examRepository.findBySupervisors_Id(teacherId);
+        List<ExamDTO> examDTOs = exams.stream().map(ExamDTO::new).collect(Collectors.toList());
+
+        return ResponseEntity.ok(ApiResponse.success("Exams for teacher retrieved", examDTOs));
     }
 }
 

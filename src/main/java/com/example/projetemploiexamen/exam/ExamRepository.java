@@ -9,5 +9,7 @@ import java.util.List;
 public interface ExamRepository extends JpaRepository<Exam, Long> {
 
     List<Exam> getExamsByAcademicYearAndPeriodAndNiveau(String academicYear, String period, Niveau niveau);
-}
+    List<Exam> findBySupervisors_Id(Long teacherId);
+
+    }
 
